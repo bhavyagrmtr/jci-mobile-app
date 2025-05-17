@@ -42,8 +42,11 @@ export default function UserProfileScreen() {
           name: fileName,
           type,
         });
-  
-        await axios.post(API_ENDPOINTS.USER_UPDATE_PROFILE, formData, {
+        // get user data from async storage
+        const userData = await AsyncStorage.getItem('userData');
+        const parsedUserData = JSON.parse(userData);
+
+        await axios.post(API_ENDPOINTS.USER_UPDATE_PROFILE(parsedUserData.id), formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },

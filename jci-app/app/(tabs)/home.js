@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { API_ENDPOINTS } from '../../config';
+import { API_ENDPOINTS } from '../../config.js';
 import { router } from 'expo-router';
 
 export default function UserHomeScreen() {
@@ -26,10 +26,17 @@ export default function UserHomeScreen() {
   }, []);
 
   const fetchData = async () => {
+    // console.log(API_ENDPOINTS);
+    // console.log(API_ENDPOINTS.ADMIN_APPROVE_USER);
+    // console.log(API_ENDPOINTS.IMAGES);
+    let data = await AsyncStorage.getItem('userData');
+    let userData = JSON.parse(data);
+    let url1 = API_ENDPOINTS.ADMIN_APPROVE_USER(userData.id);
+    console.log('URL:', url1);
     try {
       const [usersResponse, imagesResponse] = await Promise.all([
-        axios.get(API_ENDPOINTS.USER_APPROVED),
-        axios.get(API_ENDPOINTS.IMAGES),
+        axios.get(url1),
+        axios.get(API_ENDPOINTS.IMAGES_GET),
       ]);
 
       setUsers(usersResponse.data);

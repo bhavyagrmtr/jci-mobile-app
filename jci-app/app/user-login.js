@@ -45,12 +45,15 @@ export default function UserLoginScreen() {
       });
 
       console.log('Login response:', response.data);
+      console.log('Login status:', response.data);
 
       if (response.data.success && response.data.status === 'approved') {
         // Store user data in AsyncStorage
+        console.log(response.data.user);
         await AsyncStorage.setItem('userData', JSON.stringify(response.data.user));
         // Navigate to user app
-        router.replace('/user-app');
+        console.log('Login successful, navigating to user app...');
+        // router.push('/user-app')
       } else if (response.data.status === 'pending') {
         Alert.alert('Pending Approval', 'Your account is pending approval. Please wait for admin approval.');
       } else if (response.data.status === 'rejected') {

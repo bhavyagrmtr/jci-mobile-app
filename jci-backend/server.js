@@ -38,6 +38,10 @@ const upload = multer({
   }
 });
 
+app.get('/', (req, res) => {
+  res.send('Welcome to the JCI Backend API');
+}
+);
 // Middleware
 app.use(cors({
   origin: '*',
@@ -58,7 +62,7 @@ app.use((err, req, res, next) => {
 });
 
 // MongoDB Connection
-mongoose.connect('mongodb://localhost:27017/jci-app', {
+mongoose.connect('mongodb://127.0.0.1:27017/jci-app', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
@@ -82,7 +86,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', message: 'Server is running' });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8080;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Server running on http://localhost:${PORT}`);
 }); 

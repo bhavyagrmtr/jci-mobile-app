@@ -183,6 +183,7 @@ router.post('/request-update', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { mobileNumber, password } = req.body;
+        console.log('Login request received:', req.body);
         
         if (!mobileNumber || !password) {
             return res.status(400).json({ 
@@ -192,6 +193,7 @@ router.post('/login', async (req, res) => {
         }
 
         const user = await User.findOne({ mobileNumber });
+        console.log('User found:', user);
 
         if (!user) {
             return res.status(404).json({ 
@@ -201,7 +203,8 @@ router.post('/login', async (req, res) => {
         }
 
         // Verify password
-        if (user.password !== password) {
+        let isMatch = await bcrypt.compare(password,user.password);
+        if (!isMatch) {
             return res.status(401).json({ 
                 success: false,
                 message: 'Invalid password' 

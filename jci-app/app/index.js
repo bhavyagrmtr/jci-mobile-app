@@ -18,6 +18,7 @@ import axios from 'axios';
 import { API_ENDPOINTS, API_BASE_URL } from '../config';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function UserLoginScreen() {
   const [mobileNumber, setMobileNumber] = useState('');
@@ -38,6 +39,8 @@ export default function UserLoginScreen() {
       });
 
       if (response.data.success) {
+        console.log(response.data.user);
+        await AsyncStorage.setItem('userData', JSON.stringify(response.data.user));
         Alert.alert('Success', 'Login successful!', [
           {
             text: 'OK',
