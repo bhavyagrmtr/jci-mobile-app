@@ -16,7 +16,8 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "edgeToEdgeEnabled": true
+      "edgeToEdgeEnabled": true,
+      "package": "com.jcizone2.app"
     },
     "web": {
       "bundler": "metro",
@@ -44,18 +45,15 @@
     "assetBundlePatterns": [
       "**/*"
     ],
-    "extra": {
-      "eas": {
-        "projectId": "your-project-id"
-      }
-    },
-    "packagerOpts": {
-      "host": "192.168.1.8",
-      "port": 8081
-    },
-    "hostUri": "192.168.1.8:8081",
     "developer": {
       "tool": "expo-cli"
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "5a35aabb-471e-429b-854a-fc4137b76f2d"
+      }
+    },
+    "owner": "bhavyagr"
   }
 }

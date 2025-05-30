@@ -1,14 +1,95 @@
 const express = require('express');
 const router = express.Router();
 const User = require('../models/User');
+const UpdateRequest = require('../models/UpdateRequest');
+
+// Get all users
+router.get('/all-users', async (req, res) => {
+    try {
+        const users = await User.find()
+            .select('fullName email mobileNumber profilePicture status occupation location dateOfBirth')
+            .sort({ createdAt: -1 });
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Get total users count
+router.get('/total-users', async (req, res) => {
+    try {
+        const count = await User.countDocuments();
+        res.json({ count });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
 
 // Get all pending users
 router.get('/pending-users', async (req, res) => {
     try {
-        const users = await User.find({ status: 'pending' });
+        const users = await User.find({ status: 'pending' })
+            .select('fullName email mobileNumber profilePicture status occupation location dateOfBirth');
         res.json(users);
     } catch (error) {
         res.status(500).json({ error: error.message });
+    }
+});
+
+// Get all update requests
+router.get('/update-requests', async (req, res) => {
+    try {
+        const requests = await UpdateRequest.find({ status: 'pending' })
+            .populate('userId', 'fullName email mobileNumber profilePicture');
+        res.json(requests);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+// Approve update request
+router.put('/approve-update/:id', async (req, res) => {
+    try {
+        const request = await UpdateRequest.findById(req.params.id);
+        if (!request) {
+            return res.status(404).json({ message: 'Update request not found' });
+        }
+
+        const user = await User.findById(request.userId);
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Update user field
+        user[request.field] = request.newValue;
+        await user.save();
+
+        // Update request status
+        request.status = 'approved';
+        request.updatedAt = new Date();
+        await request.save();
+
+        res.json({ message: 'Update request approved successfully', request });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
+    }
+});
+
+// Reject update request
+router.put('/reject-update/:id', async (req, res) => {
+    try {
+        const request = await UpdateRequest.findById(req.params.id);
+        if (!request) {
+            return res.status(404).json({ message: 'Update request not found' });
+        }
+
+        request.status = 'rejected';
+        request.updatedAt = new Date();
+        await request.save();
+
+        res.json({ message: 'Update request rejected successfully', request });
+    } catch (error) {
+        res.status(400).json({ error: error.message });
     }
 });
 

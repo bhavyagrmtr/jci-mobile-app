@@ -1,5 +1,9 @@
 {
   "dependencies": {
-    "@react-native-picker/picker": "^2.11.0"
+    "@react-native-picker/picker": "^2.11.0",
+    "expo": "^53.0.9"
+  },
+  "devDependencies": {
+    "typescript": "~5.8.3"
   }
 }

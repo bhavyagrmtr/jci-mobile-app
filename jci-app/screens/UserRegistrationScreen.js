@@ -81,31 +81,120 @@ const UserRegistrationScreen = ({ navigation }) => {
 
   const handleSubmit = async () => {
     try {
-      const formDataToSend = new FormData();
-      formDataToSend.append('fullName', formData.fullName);
-      formDataToSend.append('occupation', formData.occupation);
-      formDataToSend.append('mobileNumber', formData.mobileNumber);
-      formDataToSend.append('dateOfBirth', formData.dateOfBirth);
-      formDataToSend.append('location', formData.location);
-      
-      if (formData.profilePicture) {
-        formDataToSend.append('profilePicture', {
-          uri: formData.profilePicture.uri,
-          type: formData.profilePicture.type,
-          name: formData.profilePicture.fileName,
-        });
+      // Validate form data
+      if (!formData.fullName || !formData.occupation || !formData.mobileNumber || !formData.dateOfBirth || !formData.location) {
+        Alert.alert('Error', 'Please fill in all required fields');
+        return;
       }
 
-      await axios.post(API_ENDPOINTS.USER_REGISTER, formDataToSend, {
+      // Validate mobile number format
+      if (!/^\d{10}$/.test(formData.mobileNumber)) {
+        Alert.alert('Error', 'Please enter a valid 10-digit mobile number');
+        return;
+      }
+
+      // Validate date format (YYYY-MM-DD)
+      if (!/^\d{4}-\d{2}-\d{2}$/.test(formData.dateOfBirth)) {
+        Alert.alert('Error', 'Please enter date in YYYY-MM-DD format');
+        return;
+      }
+
+      // Create user data object
+      const userData = {
+        fullName: formData.fullName.trim(),
+        occupation: formData.occupation.trim(),
+        mobileNumber: formData.mobileNumber.trim(),
+        dateOfBirth: formData.dateOfBirth.trim(),
+        location: formData.location.trim(),
+        status: 'pending' // Set initial status as pending for admin approval
+      };
+
+      // First, create the user
+      console.log('Creating user with data:', userData);
+      const userResponse = await axios.post(API_ENDPOINTS.USER_REGISTER, userData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
-        },
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        }
       });
 
-      Alert.alert('Success', 'Registration successful! Please wait for admin approval.');
-      navigation.navigate('UserLogin');
+      console.log('User creation response:', userResponse.data);
+
+      if (!userResponse.data.success) {
+        throw new Error(userResponse.data.message || 'Failed to create user');
+      }
+
+      const userId = userResponse.data.userId;
+
+      // If there's a profile picture, upload it
+      if (formData.profilePicture) {
+        const imageUri = formData.profilePicture.uri;
+        const imageType = imageUri.endsWith('.jpg') ? 'image/jpeg' : 
+                         imageUri.endsWith('.png') ? 'image/png' : 
+                         'image/jpeg';
+        
+        const imageFormData = new FormData();
+        imageFormData.append('profilePicture', {
+          uri: imageUri,
+          type: imageType,
+          name: `profile_${userId}.${imageType.split('/')[1]}`,
+        });
+
+        console.log('Uploading profile picture for user:', userId);
+        const imageResponse = await axios.post(
+          API_ENDPOINTS.USER_PROFILE_PICTURE(userId),
+          imageFormData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+              'Accept': 'application/json',
+            }
+          }
+        );
+
+        console.log('Profile picture upload response:', imageResponse.data);
+      }
+
+      // Send notification to admin about new registration
+      try {
+        await axios.post(`${API_BASE_URL}/api/admin/notify-new-registration`, {
+          userId: userId,
+          userData: userData
+        });
+        console.log('Admin notification sent successfully');
+      } catch (notifyError) {
+        console.error('Failed to notify admin:', notifyError);
+        // Don't throw error here, as user is already created
+      }
+
+      Alert.alert(
+        'Success', 
+        'Registration successful! Please wait for admin approval.',
+        [
+          {
+            text: 'OK',
+            onPress: () => navigation.navigate('UserLogin')
+          }
+        ]
+      );
+
     } catch (error) {
-      Alert.alert('Error', 'Registration failed. Please try again.');
+      console.error('Registration error:', error);
+      
+      if (error.response) {
+        const errorMessage = error.response.data?.message || 'Registration failed';
+        console.error('Server error:', error.response.data);
+        Alert.alert('Error', errorMessage);
+      } else if (error.request) {
+        console.error('No response from server');
+        Alert.alert(
+          'Connection Error',
+          'Could not connect to server. Please check:\n1. Your internet connection\n2. Server is running\n3. Try again later'
+        );
+      } else {
+        console.error('Error:', error.message);
+        Alert.alert('Error', error.message || 'Something went wrong. Please try again.');
+      }
     }
   };
 

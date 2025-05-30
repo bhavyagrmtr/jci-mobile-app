@@ -8,11 +8,17 @@ const updateRequestSchema = new mongoose.Schema({
   },
   field: {
     type: String,
-    required: true
+    required: true,
+    enum: ['fullName', 'occupation', 'mobileNumber', 'location', 'profilePicture']
   },
   newValue: {
-    type: String,
+    type: mongoose.Schema.Types.Mixed,
     required: true
+  },
+  type: {
+    type: String,
+    enum: ['text', 'image'],
+    default: 'text'
   },
   status: {
     type: String,
@@ -20,6 +26,10 @@ const updateRequestSchema = new mongoose.Schema({
     default: 'pending'
   },
   createdAt: {
+    type: Date,
+    default: Date.now
+  },
+  updatedAt: {
     type: Date,
     default: Date.now
   }

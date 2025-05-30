@@ -140,43 +140,133 @@ router.post('/register', upload.single('profilePicture'), async (req, res) => {
 // Get all approved users
 router.get('/approved', async (req, res) => {
     try {
-        const users = await User.find({ status: 'approved' });
-        res.json(users);
+        console.log('Fetching approved users with profile pictures...');
+        
+        const users = await User.find({ 
+            status: 'approved',
+            profilePicture: { $ne: '' } // Only get users with profile pictures
+        }).select('fullName occupation location profilePicture dateOfBirth'); // Select only necessary fields
+
+        console.log(`Found ${users.length} approved users with profile pictures`);
+
+        // Transform the data to include full profile picture URLs
+        const usersWithUrls = users.map(user => {
+            const userObj = user.toObject();
+            // Ensure the profile picture path is properly formatted
+            if (userObj.profilePicture) {
+                // Remove any leading slashes to prevent double slashes in URL
+                const cleanPath = userObj.profilePicture.replace(/^\/+/, '');
+                userObj.profilePicture = `${req.protocol}://${req.get('host')}/${cleanPath}`;
+            }
+            return userObj;
+        });
+
+        console.log('Successfully processed user data');
+
+        res.json({
+            success: true,
+            data: usersWithUrls
+        });
     } catch (error) {
-        res.status(500).json({ error: error.message });
+        console.error('Error fetching approved users:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Error fetching approved users',
+            error: error.message 
+        });
     }
 });
 
 // Update user profile picture
-router.put('/:id/profile-picture', upload.single('profilePicture'), async (req, res) => {
+router.post('/:id/profile-picture', upload.single('profilePicture'), async (req, res) => {
     try {
         const user = await User.findById(req.params.id);
         if (!user) {
-            return res.status(404).json({ message: 'User not found' });
+            return res.status(404).json({ 
+                success: false,
+                message: 'User not found' 
+            });
         }
 
+        if (!req.file) {
+            return res.status(400).json({ 
+                success: false,
+                message: 'No image file provided' 
+            });
+        }
+
+        console.log('Uploaded file:', req.file);
+
+        // Create full URL for the uploaded image
+        const cleanPath = req.file.path.replace(/^\/+/, '');
+        const imageUrl = `${req.protocol}://${req.get('host')}/${cleanPath}`;
+
+        // Update user's profile picture
         user.profilePicture = req.file.path;
         await user.save();
-        res.json({ message: 'Profile picture updated successfully', user });
+
+        console.log('Profile picture updated successfully:', imageUrl);
+
+        res.json({ 
+            success: true,
+            message: 'Profile picture uploaded successfully',
+            imageUrl: imageUrl
+        });
     } catch (error) {
-        res.status(400).json({ error: error.message });
+        console.error('Error uploading profile picture:', error);
+        res.status(500).json({ 
+            success: false,
+            message: 'Error uploading profile picture',
+            error: error.message 
+        });
     }
 });
 
-// Request profile update
+// Request update
 router.post('/request-update', async (req, res) => {
-  try {
-    const { userId, field, newValue } = req.body;
-    const updateRequest = new UpdateRequest({
-      userId,
-      field,
-      newValue
-    });
-    await updateRequest.save();
-    res.status(201).json({ message: 'Update request submitted successfully', updateRequest });
-  } catch (error) {
-    res.status(400).json({ error: error.message });
-  }
+    try {
+        const { userId, field, newValue, type } = req.body;
+        console.log('Received update request:', { userId, field, type });
+        console.log('Request body:', req.body);
+
+        // Validate user exists
+        const user = await User.findById(userId);
+        console.log('Found user:', user ? 'Yes' : 'No');
+        
+        if (!user) {
+            console.error('User not found with ID:', userId);
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found',
+                details: { userId }
+            });
+        }
+
+        // Create update request
+        const updateRequest = new UpdateRequest({
+            userId,
+            field,
+            newValue,
+            type,
+            status: 'pending'
+        });
+
+        await updateRequest.save();
+        console.log('Update request saved successfully');
+
+        res.json({ 
+            success: true, 
+            message: 'Update request sent successfully',
+            request: updateRequest
+        });
+    } catch (error) {
+        console.error('Error in request-update:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: error.message,
+            details: error.stack
+        });
+    }
 });
 
 // User login
@@ -203,7 +293,7 @@ router.post('/login', async (req, res) => {
         }
 
         // Verify password
-        let isMatch = await bcrypt.compare(password,user.password);
+        let isMatch = await bcrypt.compare(password, user.password);
         if (!isMatch) {
             return res.status(401).json({ 
                 success: false,
@@ -211,18 +301,25 @@ router.post('/login', async (req, res) => {
             });
         }
 
+        // Create full profile picture URL if it exists
+        let profilePictureUrl = '';
+        if (user.profilePicture) {
+            const cleanPath = user.profilePicture.replace(/^\/+/, '');
+            profilePictureUrl = `${req.protocol}://${req.get('host')}/${cleanPath}`;
+        }
+
         if (user.status === 'approved') {
             res.json({ 
                 success: true,
                 status: 'approved',
                 user: {
-                    id: user._id,
+                    _id: user._id,
                     fullName: user.fullName,
                     mobileNumber: user.mobileNumber,
                     occupation: user.occupation,
                     location: user.location,
                     dateOfBirth: user.dateOfBirth,
-                    profilePicture: user.profilePicture
+                    profilePicture: profilePictureUrl
                 }
             });
         } else if (user.status === 'pending') {

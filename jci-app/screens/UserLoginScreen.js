@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import { API_ENDPOINTS } from '../config';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const UserLoginScreen = ({ navigation }) => {
   const [mobileNumber, setMobileNumber] = useState('');
@@ -38,6 +39,7 @@ const UserLoginScreen = ({ navigation }) => {
       });
 
       if (response.data.success && response.data.status === 'approved') {
+        await AsyncStorage.setItem('userData', JSON.stringify(response.data.user));
         navigation.replace('UserApp', { user: response.data.user });
       } else {
         Alert.alert('Error', response.data.message || 'Your account is pending approval or has been rejected.');

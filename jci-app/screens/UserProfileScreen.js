@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   Alert,
   Keyboard,
+  SafeAreaView,
 } from 'react-native';
 import * as ImagePicker from 'react-native-image-picker';
 import axios from 'axios';
@@ -74,7 +75,7 @@ const UserProfileScreen = ({ route, navigation }) => {
   };
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
       <View style={styles.profileHeader}>
         <Image
           source={{ uri: `${API_ENDPOINTS.API_BASE_URL}/${profilePicture}` }}
@@ -119,7 +120,7 @@ const UserProfileScreen = ({ route, navigation }) => {
       <TouchableOpacity style={styles.backButton} onPress={handleBack}>
         <Text style={styles.backButtonText}>Back</Text>
       </TouchableOpacity>
-    </View>
+    </SafeAreaView>
   );
 };
 
@@ -127,69 +128,77 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    padding: 20,
   },
   profileHeader: {
     alignItems: 'center',
-    marginBottom: 30,
+    marginTop: 20,
+    marginBottom: 25,
+    paddingHorizontal: 20,
+    paddingVertical: 15,
   },
   profileImage: {
-    width: 150,
-    height: 150,
-    borderRadius: 75,
-    marginBottom: 15,
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 12,
+    borderWidth: 3,
+    borderColor: '#1a73e8',
   },
   updateButton: {
     backgroundColor: '#1a73e8',
-    padding: 10,
-    borderRadius: 5,
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+    borderRadius: 20,
   },
   updateButtonText: {
     color: '#fff',
     fontSize: 14,
-    fontWeight: 'bold',
+    fontWeight: '600',
   },
   infoContainer: {
     backgroundColor: '#f8f8f8',
-    borderRadius: 10,
-    padding: 20,
+    borderRadius: 15,
+    padding: 15,
+    marginHorizontal: 15,
     marginBottom: 20,
   },
   infoItem: {
-    marginBottom: 15,
+    marginBottom: 12,
   },
   label: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#666',
-    marginBottom: 5,
+    marginBottom: 4,
   },
   value: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#333',
     fontWeight: '500',
   },
   requestButton: {
     backgroundColor: '#f0f0f0',
-    padding: 15,
-    borderRadius: 8,
+    padding: 12,
+    borderRadius: 25,
     alignItems: 'center',
+    marginHorizontal: 15,
   },
   requestButtonText: {
     color: '#1a73e8',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 15,
+    fontWeight: '600',
   },
   backButton: {
     backgroundColor: '#f0f0f0',
-    padding: 15,
-    borderRadius: 8,
+    padding: 12,
+    borderRadius: 25,
     alignItems: 'center',
-    marginTop: 20,
+    marginTop: 15,
+    marginHorizontal: 15,
   },
   backButtonText: {
     color: '#1a73e8',
-    fontSize: 16,
-    fontWeight: 'bold',
+    fontSize: 15,
+    fontWeight: '600',
   },
 });
 
