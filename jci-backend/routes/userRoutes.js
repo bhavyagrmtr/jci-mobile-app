@@ -304,8 +304,8 @@ router.post('/login', async (req, res) => {
         // Create full profile picture URL if it exists
         let profilePictureUrl = '';
         if (user.profilePicture) {
-            const cleanPath = user.profilePicture.replace(/^\/+/, '');
-            profilePictureUrl = `${req.protocol}://${req.get('host')}/${cleanPath}`;
+            const cleanPath = user.profilePicture.split('\\')[1];
+            profilePictureUrl = `${req.protocol}://${req.get('host')}/uploads/${cleanPath}`;
         }
 
         if (user.status === 'approved') {

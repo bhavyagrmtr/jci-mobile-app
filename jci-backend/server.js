@@ -63,8 +63,8 @@ app.use((err, req, res, next) => {
 });
 
 // MongoDB Connection
-mongoose.connect('mongodb://127.0.0.1:27017/jci-app', {
-  useNewUrlParser: true,
+mongoose.connect('mongodb+srv://JCIadminZone2:zone2%40kapil@cluster0.fdiw3tb.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&dbName=jci-app', {
+  // useNewUrlParser: true,
   useUnifiedTopology: true
 })
 .then(() => console.log('Connected to MongoDB'))
@@ -72,6 +72,20 @@ mongoose.connect('mongodb://127.0.0.1:27017/jci-app', {
   console.error('MongoDB connection error:', err);
   process.exit(1);
 });
+
+
+const requestLogs = (req, res, next) => {
+
+  const oldresSend = res.send;
+  res.send = function (data) {
+    oldresSend.call(this, data);
+    console.log(`\x1b[31m[${new Date().toLocaleString()}] '${req.method} ${req.url}' ${res.statusCode} ${res.get('Content-Length') || 0} bytes\x1b[0m`);
+  };
+  next();
+}
+
+app.use(requestLogs);
+
 
 // Routes
 const userRoutes = require('./routes/userRoutes');
