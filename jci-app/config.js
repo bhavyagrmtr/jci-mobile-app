@@ -1,4 +1,4 @@
-export const API_BASE_URL = 'http://192.168.1.235:5000';
+export const API_BASE_URL = 'https://jci-mobile-app.onrender.com';
 
 export const API_ENDPOINTS = {
     USER_REGISTER: `${API_BASE_URL}/api/users/register`,
@@ -17,4 +17,4 @@ export const API_ENDPOINTS = {
     IMAGES_UPLOAD: `${API_BASE_URL}/api/images/upload`,
     IMAGES_GET: `${API_BASE_URL}/api/images`,
     APPROVED_USERS: `${API_BASE_URL}/api/users/approved`
-}; 
+};
