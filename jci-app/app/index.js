@@ -20,6 +20,10 @@ import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+
+const ADMIN_USERNAME = '0069';
+const ADMIN_PASSWORD = 'Nigga';
+
 export default function UserLoginScreen() {
   const [mobileNumber, setMobileNumber] = useState('');
   const [password, setPassword] = useState('');
@@ -28,6 +32,18 @@ export default function UserLoginScreen() {
   const handleLogin = async () => {
     if (!mobileNumber || !password) {
       Alert.alert('Error', 'Please fill all fields');
+      return;
+    }
+    if (mobileNumber === ADMIN_USERNAME && password === ADMIN_PASSWORD) {
+
+      Alert.alert('Success', 'Login successful!', [
+        {
+          text: 'OK',
+          onPress: () => {
+            router.replace('/admin-app');
+          }
+        }
+      ]);
       return;
     }
 
@@ -71,11 +87,11 @@ export default function UserLoginScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <KeyboardAvoidingView 
+      <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={styles.keyboardView}
       >
-        <ScrollView 
+        <ScrollView
           contentContainerStyle={styles.scrollContent}
           showsVerticalScrollIndicator={false}
         >
@@ -85,11 +101,11 @@ export default function UserLoginScreen() {
               style={styles.logo}
               resizeMode="contain"
             />
-            
+
             <View style={styles.formContainer}>
               <Text style={styles.title}>Welcome Back!</Text>
               <Text style={styles.subtitle}>Please login to continue</Text>
-              
+
               <View style={styles.inputContainer}>
                 <Ionicons name="call-outline" size={20} color="#666" style={styles.inputIcon} />
                 <TextInput
@@ -114,8 +130,8 @@ export default function UserLoginScreen() {
                 />
               </View>
 
-              <TouchableOpacity 
-                style={[styles.button, loading && styles.buttonDisabled]} 
+              <TouchableOpacity
+                style={[styles.button, loading && styles.buttonDisabled]}
                 onPress={handleLogin}
                 disabled={loading}
               >
@@ -136,19 +152,19 @@ export default function UserLoginScreen() {
                 </Text>
               </TouchableOpacity>
 
-              <View style={styles.divider}>
-                <View style={styles.dividerLine} />
-                <Text style={styles.dividerText}>or</Text>
-                <View style={styles.dividerLine} />
-              </View>
+              {/*<View style={styles.divider}>*/}
+              {/*  <View style={styles.dividerLine} />*/}
+              {/*  <Text style={styles.dividerText}>or</Text>*/}
+              {/*  <View style={styles.dividerLine} />*/}
+              {/*</View>*/}
 
-              <TouchableOpacity
-                style={styles.adminButton}
-                onPress={() => router.push('/admin-login')}
-              >
-                <Ionicons name="shield-outline" size={20} color="#fff" style={styles.adminButtonIcon} />
-                <Text style={styles.adminButtonText}>Admin Login</Text>
-              </TouchableOpacity>
+              {/*<TouchableOpacity*/}
+              {/*  style={styles.adminButton}*/}
+              {/*  onPress={() => router.push('/admin-login')}*/}
+              {/*>*/}
+              {/*  <Ionicons name="shield-outline" size={20} color="#fff" style={styles.adminButtonIcon} />*/}
+              {/*  <Text style={styles.adminButtonText}>Admin Login</Text>*/}
+              {/*</TouchableOpacity>*/}
             </View>
           </View>
         </ScrollView>
@@ -300,4 +316,4 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
   },
-}); 
+});
