@@ -7,9 +7,11 @@ import {
   Dimensions,
   FlatList,
   ScrollView,
+  TouchableOpacity,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Ionicons } from '@expo/vector-icons';
+import { useNavigation } from '@react-navigation/native';
 
 const { width } = Dimensions.get('window');
 
@@ -17,6 +19,7 @@ export default function HomeScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [user, setUser] = useState(null);
   const flatListRef = useRef(null);
+  const navigation = useNavigation();
 
   // Local image assets
   const images = [
@@ -127,7 +130,11 @@ export default function HomeScreen() {
     if (!user) return null;
 
     return (
-      <View style={styles.profileCard}>
+      <TouchableOpacity 
+        style={styles.profileCard}
+        onPress={() => navigation.navigate('Profile')}
+        activeOpacity={0.7}
+      >
         <View style={styles.cardHeader}>
           <View style={styles.profileImageContainer}>
             {user.profilePicture ? (
@@ -166,7 +173,7 @@ export default function HomeScreen() {
           <Text style={styles.cardFooterText}>JCI Member Card</Text>
           <Ionicons name="card" size={20} color="#fff" />
         </View>
-      </View>
+      </TouchableOpacity>
     );
   };
 
