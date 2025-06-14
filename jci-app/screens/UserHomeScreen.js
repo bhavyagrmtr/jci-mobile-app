@@ -120,6 +120,10 @@ const UserHomeScreen = ({ navigation }) => {
         />
       </View>
 
+      <View style={styles.governingBoardContainer}>
+        <Text style={styles.governingBoardText}>JCI India Governing board</Text>
+      </View>
+
       <FlatList
         data={filteredUsers}
         renderItem={renderUserCard}
@@ -227,6 +231,19 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: '#999',
     marginTop: 2,
+  },
+  governingBoardContainer: {
+    backgroundColor: '#1a73e8',
+    padding: 15,
+    marginHorizontal: 10,
+    marginBottom: 10,
+    borderRadius: 8,
+  },
+  governingBoardText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 

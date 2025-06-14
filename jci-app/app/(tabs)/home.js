@@ -22,12 +22,38 @@ export default function HomeScreen() {
   const images = [
     {
       id: '1',
-      image: require('../../assets/images/slider2.jpg'),
+      image: require('../../assets/images/s1.jpg'),
     },
     {
       id: '2',
-      image: require('../../assets/images/slider3.jpg'),
+      image: require('../../assets/images/s2.jpg'),
+    },
+    {
+      id: '3',
+      image: require('../../assets/images/s3.jpg'),
+    },
+    {
+      id: '4',
+      image: require('../../assets/images/s4.jpg'),
     }
+  ];
+
+  const zoneOfficers = [
+    { id: '1', post: 'ZONE PRESIDENT', name: 'JC KAPIL AGRAWAL', image: require('../../assets/Zone2president.png') },
+    { id: '2', post: 'IPZP', name: 'JC SUMIT AGRAWAL', image: null },
+    { id: '3', post: 'ZONE VICE PRESIDENT A', name: 'JC AVDHESH GAUTAM', image: null },
+    { id: '4', post: 'ZONE VICE PRESIDENT B', name: 'JC MANSI AGRAWAL', image: null },
+    { id: '5', post: 'ZONE VICE PRESIDENT C', name: 'JC SACHIN AGRAWAL', image: null },
+    { id: '6', post: 'ZONE SECRETARY', name: 'JC ROHIT AGRAWAL', image: null },
+    { id: '7', post: 'ZD MANAGEMENT', name: 'JC MILAN AGRAWAL', image: null },
+    { id: '8', post: 'ZD TRAINING', name: 'JC SANKET JAIN', image: null },
+    { id: '9', post: 'ZD G&D', name: 'JC RADHARAMAN AGRAWAL', image: null },
+    { id: '10', post: 'ZD BUSINESS', name: 'JC RAJAT GUPTA', image: null },
+    { id: '11', post: 'ZD PR & MARKETING', name: 'JC RITU SINGHAL', image: null },
+    { id: '12', post: 'ZD COMMUNITY DEVELOPMENT', name: 'JC BHUPENDRA AGRAWAL', image: null },
+    { id: '13', post: 'ZONE DIRECTOR JUNIOR JC', name: 'JC RAKHI MITTAL', image: null },
+    { id: '14', post: 'ZONE DIRECTOR LADY JC', name: 'JC ANURADHA JAIN', image: null },
+    { id: '15', post: 'JCOM CHAIRMEN', name: 'JC PAWAN GUPTA', image: null },
   ];
 
   useEffect(() => {
@@ -36,7 +62,6 @@ export default function HomeScreen() {
         const userData = await AsyncStorage.getItem('userData');
         if (userData) {
           const parsedUser = JSON.parse(userData);
-          // Format the date of birth
           if (parsedUser.dateOfBirth) {
             const date = new Date(parsedUser.dateOfBirth);
             parsedUser.dateOfBirth = date.toLocaleDateString('en-US', {
@@ -58,10 +83,18 @@ export default function HomeScreen() {
     const timer = setInterval(() => {
       if (currentIndex < images.length - 1) {
         setCurrentIndex(currentIndex + 1);
+        flatListRef.current?.scrollToIndex({
+          index: currentIndex + 1,
+          animated: true
+        });
       } else {
         setCurrentIndex(0);
+        flatListRef.current?.scrollToIndex({
+          index: 0,
+          animated: true
+        });
       }
-    }, 2000);
+    }, 3000);
 
     return () => clearInterval(timer);
   }, [currentIndex]);
@@ -76,21 +109,19 @@ export default function HomeScreen() {
     </View>
   );
 
-  const renderPagination = () => {
-    return (
-      <View style={styles.paginationContainer}>
-        {images.map((_, index) => (
-          <View
-            key={index}
-            style={[
-              styles.paginationDot,
-              index === currentIndex && styles.paginationDotActive,
-            ]}
-          />
-        ))}
-      </View>
-    );
-  };
+  const renderPagination = () => (
+    <View style={styles.paginationContainer}>
+      {images.map((_, index) => (
+        <View
+          key={index}
+          style={[
+            styles.paginationDot,
+            index === currentIndex && styles.paginationDotActive,
+          ]}
+        />
+      ))}
+    </View>
+  );
 
   const renderProfileCard = () => {
     if (!user) return null;
@@ -105,7 +136,7 @@ export default function HomeScreen() {
                 style={styles.profileImage}
               />
             ) : (
-              <View style={[styles.profileImage, styles.placeholderImage]}>
+              <View style={styles.placeholderImage}>
                 <Ionicons name="person" size={30} color="#fff" />
               </View>
             )}
@@ -139,66 +170,95 @@ export default function HomeScreen() {
     );
   };
 
-  const renderZonePresidentCard = () => {
-    return (
-      <View style={styles.zonePresidentCard}>
-        <View style={styles.zonePresidentHeader}>
-          <Ionicons name="ribbon" size={24} color="#fff" />
-          <Text style={styles.zonePresidentTitle}>Zone 2 President</Text>
+  const renderZoneOfficerCard = ({ item }) => (
+    <View style={styles.nationalPresidentCard}>
+      <View style={styles.nationalPresidentHeader}>
+        <Ionicons name="person" size={24} color="#fff" />
+        <Text style={styles.nationalPresidentTitle}>{item.post}</Text>
+      </View>
+      
+      <View style={styles.nationalPresidentContent}>
+        <View style={styles.nationalPresidentInfo}>
+          <Text style={styles.nationalPresidentName}>{item.name}</Text>
+          <Text style={styles.nationalPresidentDesignation}>Zone Officer</Text>
         </View>
-        
-        <View style={styles.zonePresidentContent}>
-          <View style={styles.zonePresidentInfo}>
-            <Text style={styles.zonePresidentName}>JFP Kapil Agrawal</Text>
-            <Text style={styles.zonePresidentDesignation}>Zone 2 President 2024</Text>
-          </View>
-          <View style={styles.zonePresidentImageContainer}>
+        <View style={styles.nationalPresidentImageContainer}>
+          {item.image ? (
             <Image
-              source={require('../../assets/Zone2president.png')}
-              style={styles.zonePresidentImage}
+              source={item.image}
+              style={styles.nationalPresidentImage}
               resizeMode="cover"
             />
-          </View>
-        </View>
-
-        <View style={styles.zonePresidentFooter}>
-          <Text style={styles.zonePresidentFooterText}>JCI India</Text>
-          <Ionicons name="flag" size={20} color="#fff" />
+          ) : (
+            <View style={styles.placeholderImage}>
+              <Ionicons name="image-outline" size={30} color="#fff" />
+            </View>
+          )}
         </View>
       </View>
-    );
-  };
 
-  const renderNationalPresidentCard = () => {
-    return (
-      <View style={styles.nationalPresidentCard}>
-        <View style={styles.nationalPresidentHeader}>
-          <Ionicons name="star" size={24} color="#fff" />
-          <Text style={styles.nationalPresidentTitle}>NATIONAL PRESIDENT MESSAGE</Text>
-        </View>
-        
-        <View style={styles.nationalPresidentContent}>
-          <Text style={styles.nationalPresidentName}>JFS ANKUR JHUNJHUNWALA</Text>
+      <View style={styles.nationalPresidentFooter}>
+        <Text style={styles.nationalPresidentFooterText}>JCI India</Text>
+        <Ionicons name="flag" size={20} color="#fff" />
+      </View>
+    </View>
+  );
+
+  const renderNationalPresidentCard = () => (
+    <View style={styles.nationalPresidentCard}>
+      <View style={styles.nationalPresidentHeader}>
+        <Ionicons name="star" size={24} color="#fff" />
+        <Text style={styles.nationalPresidentTitle}>National President</Text>
+      </View>
+      
+      <View style={styles.nationalPresidentContent}>
+        <View style={styles.nationalPresidentInfo}>
+          <Text style={styles.nationalPresidentName}>JFS Ankur Jhunjhunwala</Text>
           <Text style={styles.nationalPresidentDesignation}>National President 2025</Text>
-          
-          <View style={styles.messageContainer}>
-            <Text style={styles.messageText}>
-              Dear Reader,{'\n\n'}
-              I am delighted that you found this space, and are exploring the JCI India website! Greetings!{'\n\n'}
-              JCI is a growing organisation of young people in India and across the world – young people who have committed to grow into leaders who will shape the world in the times to come.{'\n\n'}
-              JCI provides opportunities that empower its members to develop into leaders who are proactive in the communities around them. Through actively working in the areas of individual development, organisational management, community development, business growth, and domestic and international networking, JCI members hone their own skills and become ever better versions of themselves, capable of providing leadership at different forums and platforms. JCI members constantly set standards of model citizenship and lead their peers by example.{'\n\n'}
-              As JCI steps into the 76th year of its existence in India, it carries with it the legacy of impactful service to its members and to the society, and brings with it the experience of transformational leadership that has grown in the organisation over the years. Armed with these strengths, JCI India is ready to unveil a new era of character building that will propel its members to the forefront of progressive leadership that the world needs.{'\n\n'}
-              The pragmatic views that members of JCI hold is the cornerstone on which world peace will one day be established. Dear reader, if you are not already a part of this movement, now is your opportunity to become the people who changed the world positively. 2025 can be your year too!{'\n\n'}
-              I hope you find this website informative and useful. Please feel free to connect with us to RISE UP and change the world together.{'\n\n'}
-              Jc Ankur Jhunjhunwala{'\n'}
-              National President 2025{'\n'}
-              JCI India.
-            </Text>
-          </View>
+        </View>
+        <View style={styles.nationalPresidentImageContainer}>
+          <Image
+            source={require('../../assets/images/JCIindiaPresident.jpeg')}
+            style={styles.nationalPresidentImage}
+            resizeMode="cover"
+          />
         </View>
       </View>
-    );
-  };
+
+      <View style={styles.nationalPresidentFooter}>
+        <Text style={styles.nationalPresidentFooterText}>JCI India</Text>
+        <Ionicons name="flag" size={20} color="#fff" />
+      </View>
+    </View>
+  );
+
+  const renderNVP_Area_A_Card = () => (
+    <View style={styles.nationalPresidentCard}>
+      <View style={styles.nationalPresidentHeader}>
+        <Ionicons name="ribbon" size={24} color="#fff" />
+        <Text style={styles.nationalPresidentTitle}>National NVP (Area-A)</Text>
+      </View>
+      
+      <View style={styles.nationalPresidentContent}>
+        <View style={styles.nationalPresidentInfo}>
+          <Text style={styles.nationalPresidentName}>JC Ashok Bhatt</Text>
+          <Text style={styles.nationalPresidentDesignation}>National NVP 2025</Text>
+        </View>
+        <View style={styles.nationalPresidentImageContainer}>
+          <Image
+            source={require('../../assets/images/NVP.jpg')}
+            style={styles.nationalPresidentImage}
+            resizeMode="cover"
+          />
+        </View>
+      </View>
+
+      <View style={styles.nationalPresidentFooter}>
+        <Text style={styles.nationalPresidentFooterText}>JCI India</Text>
+        <Ionicons name="flag" size={20} color="#fff" />
+      </View>
+    </View>
+  );
 
   return (
     <ScrollView 
@@ -207,6 +267,10 @@ export default function HomeScreen() {
       contentContainerStyle={{ paddingBottom: 20 }}
     >
       <View style={styles.header}>
+        <View style={styles.welcomeContainer}>
+          <Text style={styles.welcomeText}>Welcome to JCI</Text>
+          <Text style={styles.headerUserName}>{user?.fullName || 'Member'}</Text>
+        </View>
         <Image
           source={require('../../assets/images/icon.png')}
           style={styles.headerIcon}
@@ -217,7 +281,15 @@ export default function HomeScreen() {
         <FlatList
           ref={flatListRef}
           data={images}
-          renderItem={renderItem}
+          renderItem={({ item }) => (
+            <View style={styles.imageContainer}>
+              <Image
+                source={item.image}
+                style={styles.sliderImage}
+                resizeMode="cover"
+              />
+            </View>
+          )}
           keyExtractor={(item) => item.id}
           horizontal
           pagingEnabled
@@ -231,13 +303,42 @@ export default function HomeScreen() {
             offset: width * index,
             index,
           })}
+          snapToInterval={width}
+          decelerationRate="fast"
+          snapToAlignment="center"
         />
         {renderPagination()}
       </View>
 
       {renderProfileCard()}
-      {renderZonePresidentCard()}
-      {renderNationalPresidentCard()}
+
+      <View style={styles.governingBoardContainer}>
+        <Text style={styles.governingBoardText}>JCI India Governing Board</Text>
+      </View>
+
+      <ScrollView 
+        horizontal 
+        showsHorizontalScrollIndicator={false}
+        style={styles.cardsScrollView}
+        contentContainerStyle={styles.cardsScrollViewContent}
+      >
+        {renderNationalPresidentCard()}
+        {renderNVP_Area_A_Card()}
+      </ScrollView>
+
+      <View style={styles.zoneGoverningBoardContainer}>
+        <Text style={styles.zoneGoverningBoardText}>Zone Governing Board</Text>
+      </View>
+
+      <FlatList
+        data={zoneOfficers}
+        renderItem={renderZoneOfficerCard}
+        keyExtractor={(item) => item.id}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.cardsScrollViewContent}
+      />
+
     </ScrollView>
   );
 }
@@ -246,72 +347,81 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingTop: 40,
+    paddingTop: 50,
   },
   header: {
     flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 15,
-    paddingVertical: 8,
-    marginBottom: 5,
+    paddingHorizontal: 20,
+    marginBottom: 15,
+    backgroundColor: '#f8f8f8',
+    paddingVertical: 15,
+    zIndex: 10,
+  },
+  welcomeContainer: {
+    flex: 1,
+  },
+  welcomeText: {
+    fontSize: 16,
+    color: '#333',
+    marginBottom: 2,
+  },
+  headerUserName: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#1a73e8',
   },
   headerIcon: {
-    width: 35,
-    height: 35,
+    width: 40,
+    height: 40,
   },
   sliderContainer: {
-    height: 300,
-    width: width,
-    backgroundColor: '#f0f0f0',
-    marginTop: 10,
-    paddingHorizontal: 10,
+    height: 200,
+    marginBottom: 10,
   },
   imageContainer: {
-    width: width - 20, // Accounting for reduced padding
-    height: 300,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
+    width: width,
+    height: 200,
+    paddingHorizontal: 15,
+  },
+  sliderImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+    borderRadius: 15,
     overflow: 'hidden',
-    elevation: 5,
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  sliderImage: {
-    width: width - 20, // Accounting for reduced padding
-    height: 300,
-    borderRadius: 20,
-  },
   paginationContainer: {
     flexDirection: 'row',
-    position: 'absolute',
-    bottom: 20,
-    alignSelf: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.3)',
-    padding: 8,
-    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
   },
   paginationDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.5)',
+    backgroundColor: '#ccc',
     marginHorizontal: 4,
   },
   paginationDotActive: {
-    backgroundColor: '#fff',
+    backgroundColor: '#1a73e8',
     width: 12,
     height: 12,
     borderRadius: 6,
   },
   profileCard: {
-    marginHorizontal: 15,
-    marginVertical: 20,
     backgroundColor: '#1a73e8',
-    borderRadius: 15,
-    padding: 15,
+    marginHorizontal: 20,
+    marginVertical: 15,
+    borderRadius: 12,
+    overflow: 'hidden',
     elevation: 5,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
@@ -322,26 +432,23 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
+    paddingHorizontal: 15,
+    paddingTop: 15,
   },
   profileImageContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: '#fff',
+    width: 70,
+    height: 70,
+    borderRadius: 35,
     overflow: 'hidden',
-    marginRight: 12,
+    marginRight: 15,
   },
   profileImage: {
     width: '100%',
     height: '100%',
   },
-  placeholderImage: {
-    backgroundColor: '#ccc',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
   userInfo: {
     flex: 1,
+    justifyContent: 'center',
   },
   userName: {
     color: '#fff',
@@ -354,17 +461,18 @@ const styles = StyleSheet.create({
     fontSize: 14,
   },
   cardBody: {
-    marginBottom: 15,
+    marginBottom: 20,
+    paddingHorizontal: 15,
   },
   infoRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 8,
+    marginBottom: 10,
   },
   infoText: {
     color: '#fff',
-    marginLeft: 8,
-    fontSize: 15,
+    fontSize: 16,
+    marginLeft: 10,
   },
   cardFooter: {
     flexDirection: 'row',
@@ -372,85 +480,45 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderTopWidth: 1,
     borderTopColor: 'rgba(255, 255, 255, 0.2)',
-    paddingTop: 12,
+    paddingTop: 15,
+    paddingHorizontal: 15,
+    paddingBottom: 15,
   },
   cardFooterText: {
     color: 'rgba(255, 255, 255, 0.8)',
     fontSize: 14,
   },
-  zonePresidentCard: {
-    margin: 20,
-    marginTop: 0,
-    backgroundColor: '#2c3e50',
-    borderRadius: 15,
-    padding: 20,
-    elevation: 5,
+  governingBoardContainer: {
+    backgroundColor: '#2a9d8f',
+    padding: 15,
+    marginHorizontal: 20,
+    marginVertical: 15,
+    borderRadius: 8,
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
   },
-  zonePresidentHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 15,
-  },
-  zonePresidentTitle: {
+  governingBoardText: {
     color: '#fff',
     fontSize: 18,
     fontWeight: 'bold',
-    marginLeft: 10,
+    textAlign: 'center',
   },
-  zonePresidentContent: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
+  cardsScrollView: {
+    marginVertical: 10,
   },
-  zonePresidentInfo: {
-    flex: 1,
-    marginRight: 15,
-  },
-  zonePresidentName: {
-    color: '#fff',
-    fontSize: 22,
-    fontWeight: 'bold',
-    marginBottom: 5,
-  },
-  zonePresidentDesignation: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 16,
-  },
-  zonePresidentImageContainer: {
-    width: 100,
-    height: 100,
-    borderRadius: 10,
-    overflow: 'hidden',
-    backgroundColor: '#fff',
-  },
-  zonePresidentImage: {
-    width: '100%',
-    height: '100%',
-  },
-  zonePresidentFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 255, 255, 0.2)',
-    paddingTop: 15,
-  },
-  zonePresidentFooterText: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 14,
+  cardsScrollViewContent: {
+    paddingHorizontal: 20,
   },
   nationalPresidentCard: {
-    marginHorizontal: 15,
-    marginVertical: 10,
-    backgroundColor: '#1a237e',
-    borderRadius: 15,
-    padding: 15,
-    elevation: 5,
+    backgroundColor: '#2a9d8f',
+    marginRight: 15,
+    width: 300,
+    borderRadius: 12,
+    overflow: 'hidden',
+    elevation: 3,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
@@ -459,7 +527,8 @@ const styles = StyleSheet.create({
   nationalPresidentHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 15,
+    padding: 15,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
   },
   nationalPresidentTitle: {
     color: '#fff',
@@ -468,27 +537,70 @@ const styles = StyleSheet.create({
     marginLeft: 10,
   },
   nationalPresidentContent: {
-    marginBottom: 15,
+    flexDirection: 'row',
+    padding: 15,
+    alignItems: 'center',
+  },
+  nationalPresidentInfo: {
+    flex: 1,
   },
   nationalPresidentName: {
     color: '#fff',
-    fontSize: 20,
+    fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
   },
   nationalPresidentDesignation: {
-    color: 'rgba(255, 255, 255, 0.8)',
-    fontSize: 16,
-    marginBottom: 15,
-  },
-  messageContainer: {
-    backgroundColor: 'rgba(255, 255, 255, 0.1)',
-    borderRadius: 10,
-    padding: 15,
-  },
-  messageText: {
     color: '#fff',
     fontSize: 14,
-    lineHeight: 22,
+    opacity: 0.9,
+  },
+  nationalPresidentImageContainer: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    overflow: 'hidden',
+    marginLeft: 15,
+  },
+  nationalPresidentImage: {
+    width: '100%',
+    height: '100%',
+  },
+  nationalPresidentFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    padding: 15,
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+  },
+  nationalPresidentFooterText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '500',
+  },
+  zoneGoverningBoardContainer: {
+    backgroundColor: '#2a9d8f',
+    padding: 15,
+    marginHorizontal: 20,
+    marginVertical: 15,
+    borderRadius: 8,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+  },
+  zoneGoverningBoardText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+  placeholderImage: {
+    backgroundColor: '#666',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    height: '100%',
   },
 }); 
