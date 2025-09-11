@@ -305,7 +305,7 @@ router.post('/login', async (req, res) => {
         let profilePictureUrl = '';
         if (user.profilePicture) {
             const cleanPath = user.profilePicture.split('\\')[1];
-            profilePictureUrl = `${req.protocol}://${req.get('host')}/uploads/${cleanPath}`;
+            profilePictureUrl = `${req.protocol}://${req.get('host')}/${user.profilePicture}`
         }
 
         if (user.status === 'approved') {
